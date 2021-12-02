@@ -1,20 +1,24 @@
-if(process.env.NODE_ENV !== 'production'){
-    require('dotenv').config()
-}
+const http = require('http')
+const fs = require('fs')
+const port = 3000
 
-const express = require("express")
-const app = express()
-const expressLayouts = require("express-ejs-layouts")
+const server = http.createServer(function(req, res) {
+    res.writeHead(200, { 'Content-Type' : 'text/html' })
+    fs.readFile('index.html', function(error, data){
+        if(error){
+            res.writeHead(404)
+            res.write('Error: File Not Found')
+        }else{
+            res.write(data)
+        }
+        res.end()
+    })
+})
 
-const indexRouter = require('./routes/index')
-
-app.set("view engine", "ejs")
-app.set("views", __dirname + '/views')
-app.set('layout', 'layouts/layout')
-app.use(expressLayouts)
-app.use(express.static('public'))
-
-app.use('/', indexRouter)
-
-app.listen(process.env.PORT || 3000)
-console.log('The server is running on port 3000')
+server.listen(port, function(error) {
+    if(error) {
+        console.log('Something went wrong', error)
+    } else {
+        console.log('Server is listening on port' + port)
+    }
+})
